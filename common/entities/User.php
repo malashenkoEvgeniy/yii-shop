@@ -66,6 +66,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
         $user->status = self::STATUS_WAIT;
+        $user->email_confirm_token = Yii::$app->security->generateRandomString();
         $user->created_at = time();
         return $user;
     }
@@ -76,22 +77,6 @@ class User extends ActiveRecord implements IdentityInterface
             throw new \DomainException('User is already active.');
         }
         $this->status = self::STATUS_ACTIVE;
-        $this->removeEmailConfirmToken();
-    }
-
-    /**
-     * Generates new password reset token
-     */
-    private function generateEmailConfirmToken()
-    {
-        $this->email_confirm_token = Yii::$app->security->generateRandomString();
-    }
-
-    /**
-     * Removes email confirm token
-     */
-    private function removeEmailConfirmToken()
-    {
         $this->email_confirm_token = null;
     }
 
@@ -228,13 +213,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
-    /**
-     * Generates new password reset token
-     */
-    private function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
 
     /**
      * Generates new token for email verification
@@ -244,13 +222,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
-    /**
-     * Removes password reset token
-     */
-    private function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
 
     public static function create($name, $email, $password){
         $user = new static();
