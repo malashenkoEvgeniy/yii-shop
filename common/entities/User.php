@@ -16,6 +16,7 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
+ * @property string $email_confirm_token
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -24,10 +25,9 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
+    const STATUS_WAIT = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
-
 
     /**
      * {@inheritdoc}
@@ -53,9 +53,51 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+          ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_WAIT]],
         ];
+    }
+
+    public static function requestSignup(string $username, string $email, string $password): self
+    {
+        $user = new static();
+        $user->username = $username;
+        $user->email = $email;
+        $user->setPassword($password);
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+        $user->status = self::STATUS_WAIT;
+        $user->created_at = time();
+        return $user;
+    }
+
+    public function confirmSignup(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('User is already active.');
+        }
+        $this->status = self::STATUS_ACTIVE;
+        $this->removeEmailConfirmToken();
+    }
+
+    /**
+     * Generates new password reset token
+     */
+    private function generateEmailConfirmToken()
+    {
+        $this->email_confirm_token = Yii::$app->security->generateRandomString();
+    }
+
+    /**
+     * Removes email confirm token
+     */
+    private function removeEmailConfirmToken()
+    {
+        $this->email_confirm_token = null;
+    }
+
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
     }
 
     /**

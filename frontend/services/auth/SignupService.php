@@ -6,21 +6,27 @@ namespace frontend\services\auth;
 
 use common\entities\User;
 use frontend\forms\SignupForm;
+use yii\mail\MailerInterface;
 
 class SignupService
 {
-    public function signup(SignupForm $form): User
+    private $mailer;
+
+    public function __construct(MailerInterface $mailer)
     {
-        $user = User::signup(
+        $this->mailer = $mailer;
+    }
+
+
+    public function signup(SignupForm $form): void
+    {
+        $user = User::requestSignup(
           $form->username,
           $form->email,
           $form->password
         );
 
-        if (!$user->save()) {
-            throw new \RuntimeException('Saving error.');
-        }
-
-        return $user;
+        throw new \RuntimeException('Saving error.');
+    }
 
 }
