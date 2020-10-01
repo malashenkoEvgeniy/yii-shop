@@ -38,23 +38,6 @@ class SignupForm extends Model
     }
 
     /**
-     * Signs user up.
-     *
-     * @return bool whether the creating new account was successful and email was sent
-     */
-    public function signup()
-    {
-        if (!$this->validate()) {
-            return null;
-        }
-
-        $user = User::create($this->username, $this->email, $this->password);
-
-        return $this->sendEmail($user);
-
-    }
-
-    /**
      * Sends confirmation email to user
      * @param User $user user model to with email should be send
      * @return bool whether the email was sent
