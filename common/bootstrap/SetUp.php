@@ -12,5 +12,10 @@ class SetUp implements BootstrapInterface
         $container->setSingleton(UserPasswordResetService::class, [], [
           [$app->params['supportEmail'] => $app->name . ' robot'],
         ]);
+
+        $container->setSingleton(ContactService::class, [], [
+          [$app->params['supportEmail'] => $app->name . ' robot'],
+          $app->params['adminEmail']
+        ]);
     }
 }
