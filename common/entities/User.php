@@ -1,6 +1,7 @@
 <?php
 namespace common\entities;
 
+use DomainException;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -66,7 +67,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
         $user->status = self::STATUS_WAIT;
-        $user->email_confirm_token = Yii::$app->security->generateRandomString();
+        $user->generateEmailConfirmToken();
         $user->created_at = time();
         return $user;
     }
@@ -74,7 +75,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function confirmSignup(): void
     {
         if (!$this->isWait()) {
-            throw new \DomainException('User is already active.');
+            throw new DomainException('User is already active.');
         }
         $this->status = self::STATUS_ACTIVE;
         $this->email_confirm_token = null;
@@ -245,7 +246,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function resetPassword($password): void
     {
         if (empty($this->password_reset_token)) {
-            throw new \DomainException('Password resetting is not requested.');
+            throw new DomainException('Password resetting is not requested.');
         }
         $this->setPassword($password);
         $this->password_reset_token = null;
@@ -254,5 +255,18 @@ class User extends ActiveRecord implements IdentityInterface
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    private function generateEmailConfirmToken()
+    {
+        $this->email_confirm_token = Yii::$app->security->generateRandomString();
+    }
+
+    /**
+     * Removes email confirm token
+     */
+    private function removeEmailConfirmToken()
+    {
+        $this->email_confirm_token = null;
     }
 }
