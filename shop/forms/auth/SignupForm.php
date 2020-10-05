@@ -1,8 +1,8 @@
 <?php
 namespace shop\forms\auth;
 
+use shop\entities\User\User;
 use yii\base\Model;
-use shop\entities\User;
 
 /**
  * Signup form
