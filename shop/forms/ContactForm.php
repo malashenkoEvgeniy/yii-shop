@@ -1,7 +1,8 @@
 <?php
 
-namespace frontend\forms;
+namespace shop\forms;
 
+use Yii;
 use yii\base\Model;
 
 class ContactForm extends Model

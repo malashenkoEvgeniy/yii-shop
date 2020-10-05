@@ -1,12 +1,11 @@
 <?php
 namespace backend\controllers;
 
-use common\services\AuthService;
+use shop\services\auth\AuthService;
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use common\forms\LoginForm;
+use shop\forms\auth\LoginForm;
 
 /**
  * Site controller
@@ -20,26 +19,13 @@ class SiteController extends Controller
         parent::__construct($id, $module, $config);
         $this->authService = $authService;
     }
+
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -50,7 +36,7 @@ class SiteController extends Controller
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function actions()
     {
@@ -82,7 +68,7 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        $this->layout = 'blank';
+        $this->layout = 'main-login';
 
         $form = new LoginForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
@@ -96,9 +82,8 @@ class SiteController extends Controller
         }
 
         return $this->render('login', [
-                'model' => $form,
-            ]);
-
+            'model' => $form,
+        ]);
     }
 
     /**

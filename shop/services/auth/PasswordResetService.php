@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\services\auth;
+namespace shop\services\auth;
 
-use frontend\forms\PasswordResetRequestForm;
-use frontend\forms\ResetPasswordForm;
-use common\repositories\UserRepository;
+use shop\forms\auth\PasswordResetRequestForm;
+use shop\forms\auth\ResetPasswordForm;
+use shop\repositories\UserRepository;
 use Yii;
 use yii\mail\MailerInterface;
 
@@ -29,14 +29,15 @@ class PasswordResetService
 
         $user->requestPasswordReset();
         $this->users->save($user);
+
         $sent = $this->mailer
-          ->compose(
-            ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
-            ['user' => $user]
-          )
-          ->setTo($user->email)
-          ->setSubject('Password reset for ' . Yii::$app->name)
-          ->send();
+            ->compose(
+                ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
+                ['user' => $user]
+            )
+            ->setTo($user->email)
+            ->setSubject('Password reset for ' . Yii::$app->name)
+            ->send();
 
         if (!$sent) {
             throw new \RuntimeException('Sending error.');
@@ -45,10 +46,10 @@ class PasswordResetService
 
     public function validateToken($token): void
     {
-        if (!$this->users->existsByPasswordResetToken($token)) {
+        if (empty($token) || !is_string($token)) {
             throw new \DomainException('Password reset token cannot be blank.');
         }
-        if (!$this->existsByPasswordResetToken($token)) {
+        if (!$this->users->existsByPasswordResetToken($token)) {
             throw new \DomainException('Wrong password reset token.');
         }
     }

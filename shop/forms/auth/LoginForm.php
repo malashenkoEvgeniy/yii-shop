@@ -1,5 +1,5 @@
 <?php
-namespace common\forms;
+namespace shop\forms\auth;
 
 use yii\base\Model;
 
@@ -16,5 +16,4 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
         ];
     }
-
 }

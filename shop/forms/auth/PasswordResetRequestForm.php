@@ -1,9 +1,8 @@
 <?php
-namespace frontend\forms;
+namespace shop\forms\auth;
 
-use common\entities\User;
 use yii\base\Model;
-
+use shop\entities\User;
 
 class PasswordResetRequestForm extends Model
 {
