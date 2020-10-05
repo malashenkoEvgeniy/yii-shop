@@ -20,17 +20,17 @@ class SignupController extends Controller
     public function behaviors(): array
     {
         return [
-          'access' => [
-            'class' => AccessControl::className(),
-            'only' => ['index'],
-            'rules' => [
-              [
-                'actions' => ['index'],
-                'allow' => true,
-                'roles' => ['?'],
-              ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                ],
             ],
-          ],
         ];
     }
 
@@ -52,7 +52,7 @@ class SignupController extends Controller
         }
 
         return $this->render('request', [
-          'model' => $form,
+            'model' => $form,
         ]);
     }
 

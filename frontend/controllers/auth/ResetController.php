@@ -36,7 +36,7 @@ class ResetController extends Controller
         }
 
         return $this->render('request', [
-          'model' => $form,
+            'model' => $form,
         ]);
     }
 
@@ -66,7 +66,7 @@ class ResetController extends Controller
         }
 
         return $this->render('confirm', [
-          'model' => $form,
+            'model' => $form,
         ]);
     }
 }
