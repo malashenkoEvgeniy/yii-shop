@@ -10,15 +10,15 @@ class DefaultController extends Controller
     public function behaviors(): array
     {
         return [
-          'access' => [
-            'class' => AccessControl::className(),
-            'rules' => [
-              [
-                'allow' => true,
-                'roles' => ['@'],
-              ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
             ],
-          ],
         ];
     }
 

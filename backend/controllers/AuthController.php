@@ -23,12 +23,12 @@ class AuthController extends Controller
     public function behaviors()
     {
         return [
-          'verbs' => [
-            'class' => VerbFilter::className(),
-            'actions' => [
-              'logout' => ['post'],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'logout' => ['post'],
+                ],
             ],
-          ],
         ];
     }
 
@@ -56,7 +56,7 @@ class AuthController extends Controller
         }
 
         return $this->render('login', [
-          'model' => $form,
+            'model' => $form,
         ]);
     }
 

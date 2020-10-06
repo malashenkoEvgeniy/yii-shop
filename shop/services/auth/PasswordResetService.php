@@ -32,8 +32,8 @@ class PasswordResetService
 
         $sent = $this->mailer
             ->compose(
-              ['html' => 'auth/reset/confirm-html', 'text' => 'auth/reset/confirm-text'],
-              ['user' => $user]
+                ['html' => 'auth/reset/confirm-html', 'text' => 'auth/reset/confirm-text'],
+                ['user' => $user]
             )
             ->setTo($user->email)
             ->setSubject('Password reset for ' . Yii::$app->name)

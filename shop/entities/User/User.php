@@ -1,13 +1,13 @@
 <?php
 namespace shop\entities\User;
 
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 
 /**
  * User model
@@ -23,7 +23,7 @@ use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
- *  *
+ *
  * @property Network[] $networks
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -63,11 +63,17 @@ class User extends ActiveRecord implements IdentityInterface
         return $user;
     }
 
-    public function getNetworks(): ActiveQuery
+    public function attachNetwork($network, $identity): void
     {
-        return $this->hasMany(Network::class, ['user_id' => 'id']);
+        $networks = $this->networks;
+        foreach ($networks as $current) {
+            if ($current->isFor($network, $identity)) {
+                throw new \DomainException('Network is already attached.');
+            }
+        }
+        $networks[] = Network::create($network, $identity);
+        $this->networks = $networks;
     }
-
 
     public function requestPasswordReset(): void
     {
@@ -96,6 +102,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->status === self::STATUS_ACTIVE;
     }
 
+    public function getNetworks(): ActiveQuery
+    {
+        return $this->hasMany(Network::className(), ['user_id' => 'id']);
+    }
+
     /**
      * @inheritdoc
      */
@@ -111,17 +122,17 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-          [
-            'class' => SaveRelationsBehavior::className(),
-            'relations' => ['networks'],
-          ],
+            [
+                'class' => SaveRelationsBehavior::className(),
+                'relations' => ['networks'],
+            ],
         ];
     }
 
     public function transactions()
     {
         return [
-          self::SCENARIO_DEFAULT => self::OP_ALL,
+            self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
     }
 
